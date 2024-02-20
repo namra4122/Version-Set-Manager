@@ -1,0 +1,15 @@
+{
+  "name": "versionset-manager",
+  "version": "1.0.0",
+  "description": "Code Documents and Presentation Management Website",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "VersionSet",
+    "KMS"
+  ],
+  "author": "Namra Maniar",
+  "license": "ISC"
+}
