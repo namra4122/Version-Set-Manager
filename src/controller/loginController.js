@@ -1,5 +1,5 @@
 // import asyncHandler from 'express-async-handler'
-import { dbStruct } from '../models/userData.js';
+import { dbStruct } from '../models/userModel.js';
 // const asyncHandler = require("express-async-handler");
 // const db_struct = require('../models/personal');
 

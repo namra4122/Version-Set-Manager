@@ -12,8 +12,8 @@ router.get('/', (req,res)=>{
 })
 
 router.route('/login').post(login);
-router.route('/logout').post(logout);
-router.route('/profile').post(profile);
-router.route('/register').post(register);
+// router.route('/logout').post(logout);
+// router.route('/profile').post(profile);
+// router.route('/register').post(register);
 
 export { router };

@@ -5,6 +5,7 @@ import { router } from "./routes/loginRoutes.js";
 
 const app = express();
 
+//cross platform reference
 app.use(cors({
     origin: process.env.CORS_ORIGIN,
     credentials: true,
@@ -26,6 +27,6 @@ app.use(express.static("public")); //reason for public name is i have a folder n
 
 app.use(cookieParser());
 
-// app.use('/',router);
+app.use('/',router);
 
 export { app }
