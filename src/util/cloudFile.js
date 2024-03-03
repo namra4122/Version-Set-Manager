@@ -2,9 +2,9 @@ import { v2 as cloudinary } from 'cloudinary'; //Cloud Upload SDK (Can be AWS,AZ
 import fs from 'fs' //File System
           
 cloudinary.config({ 
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET
+    cloud_name: 'versionset',
+    api_key: '345138626487337',
+    api_secret: 'bXqudKX-ja2j08JlDCOlaUyN3mw',
 });
 
 const fileCloudUpload = async (localFilePath) => {
@@ -14,7 +14,8 @@ const fileCloudUpload = async (localFilePath) => {
             resource_type: "auto",
         })
 
-        console.log("File Uploaded!!" ,fileResponse.url);
+        // console.log("File Uploaded!!" ,fileResponse.url);
+        fs.unlinkSync(localFilePath);
         return fileResponse;
     }catch(error){
         console.error(error);

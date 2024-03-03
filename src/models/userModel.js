@@ -4,12 +4,12 @@ import bcrypt from "bcrypt";
 
 const userSchema = new Schema(
   {
-    userid:{
-      type: String,
-      unique: true,
-      required: true,
-      lowercase: true,
-      trim: true,
+    email:{
+      type:String,
+      required:[true,"E-Mail Required"],
+      unique:true,
+      lowercase:true,
+      trim:true,
       index: true, //to make userid searchable in database
     },
     fullName:{
@@ -17,13 +17,6 @@ const userSchema = new Schema(
       required: true,
       trim: true,
       index: true, //to make userid searchable in database
-    },
-    email:{
-      type:String,
-      required:[true,"E-Mail Required"],
-      unique:true,
-      lowercase:true,
-      trim:true,
     },
     avatar:{
       type:String,
@@ -50,7 +43,7 @@ const userSchema = new Schema(
 
 userSchema.pre("save", async function(next){
   if(this.isModified("password")){
-    this.password = bcrypt.hash(this.password, 10);
+    this.password = await bcrypt.hash(this.password, 10);
   }
   next();
 }); //avoid using ()=>{} in pre kyu ki arrow function se context nahi milata parameter ka
@@ -62,7 +55,7 @@ userSchema.methods.isPasswordCorrect = async function(password){
 userSchema.methods.generateAccessToken = function(){
   return jwt.sign({
     _id: this._id,
-    userid: this.userid,
+    email: this.email,
     fullName: this.fullName,
     role: this.role
   },process.env.ACCESS_TOKEN_SECRET,

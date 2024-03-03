@@ -1,7 +1,7 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import { router } from "./routes/loginRoutes.js";
+import userRoute from "./routes/userRoute.js";
 
 const app = express();
 
@@ -27,6 +27,7 @@ app.use(express.static("public")); //reason for public name is i have a folder n
 
 app.use(cookieParser());
 
-app.use('/',router);
+//Route declaration
+app.use('/api/user',userRoute);
 
 export { app }
