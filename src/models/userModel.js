@@ -42,15 +42,15 @@ const userSchema = new Schema(
 );
 
 userSchema.pre("save", async function(next){
-  if(this.isModified("password")){
-    this.password = await bcrypt.hash(this.password, 10);
-  }
+  if(!this.isModified("password")) return next();
+  
+  this.password = await bcrypt.hash(this.password, 10);
   next();
 }); //avoid using ()=>{} in pre kyu ki arrow function se context nahi milata parameter ka
 
-userSchema.methods.isPasswordCorrect = async function(password){
-  return await bcrypt.compare(password,this.password);
-}; //use to compare password when user is login with his/her stored password
+userSchema.statics.isPasswordCorrect = async function(password,storedPassword){
+  return await bcrypt.compare(password,storedPassword);
+}; //use to compare password when user is login with user stored password
 
 userSchema.methods.generateAccessToken = function(){
   return jwt.sign({
@@ -73,4 +73,5 @@ userSchema.methods.generateRefreshToken = function(){
   })
 } //generate RefreshToken
 
+export { userSchema };
 export const User = mongoose.model("userData", userSchema);

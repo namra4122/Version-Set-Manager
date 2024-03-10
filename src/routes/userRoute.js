@@ -1,9 +1,10 @@
 import express from "express";
 import { fileLocalUpload } from "../middleware/multerFile.js";
+import { verifyJWT } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-import { register,login } from "../controller/userController.js";
+import { register,login,logout } from "../controller/userController.js";
 
 router.route('/register').post(
     fileLocalUpload.fields([ //profile pic upload
@@ -15,7 +16,9 @@ router.route('/register').post(
     register
 );
 router.route('/login').post(login);
-// router.route('/logout').post(logout);
+
+//securedRoutes
+router.route('/logout').post(verifyJWT,logout);
 // router.route('/profile').post(profile);
 
 export default router;
