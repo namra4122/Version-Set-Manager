@@ -3,11 +3,13 @@ import { apiError } from "../util/apiError.js";
 import { asyncHandler } from "../util/asyncHandler.js";
 import jwt from 'jsonwebtoken';
 
-export const verifyJWT = asyncHandler(async(req,res,next) => {
+export const verifyJWT = asyncHandler(async(req,_,next) => {
     try {
         const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ","")
-    
+        console.log("TOKEN: ",token);
+
         if(!token){
+            console.log("inside if token:",token);
             throw new apiError(401, "Unauthorized Token");
         }
         const decodeToken = jwt.verify(token,process.env.ACCESS_TOKEN_SECRET);

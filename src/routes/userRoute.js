@@ -4,7 +4,14 @@ import { verifyJWT } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-import { register,login,logout } from "../controller/userController.js";
+import { 
+    register,
+    login,
+    logout,
+    refreshToken,
+    changeCurrentPassword,
+    getUser
+} from "../controller/userController.js";
 
 router.route('/register').post(
     fileLocalUpload.fields([ //profile pic upload
@@ -19,6 +26,8 @@ router.route('/login').post(login);
 
 //securedRoutes
 router.route('/logout').post(verifyJWT,logout);
-// router.route('/profile').post(profile);
+router.route('/refreshToken').post(refreshToken);
+router.route('/changePassword').post(verifyJWT,changeCurrentPassword);
+router.route('/getUser').get(verifyJWT,getUser);
 
 export default router;

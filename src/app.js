@@ -27,7 +27,9 @@ app.use(express.static("public")); //reason for public name is i have a folder n
 app.use(cookieParser());
 
 import userRoute from "./routes/userRoute.js";
+import courseRoute from "./routes/courseRoute.js"
 //Route declaration
 app.use('/api/user',userRoute);
+app.use('/api/course',courseRoute);
 
 export { app }
