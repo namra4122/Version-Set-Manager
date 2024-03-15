@@ -10,7 +10,9 @@ import {
     logout,
     refreshToken,
     changeCurrentPassword,
-    getUser
+    getUser,
+    getStudent,
+    getFaculty
 } from "../controller/userController.js";
 
 router.route('/register').post(
@@ -29,5 +31,7 @@ router.route('/logout').post(verifyJWT,logout);
 router.route('/refreshToken').post(refreshToken);
 router.route('/changePassword').post(verifyJWT,changeCurrentPassword);
 router.route('/getUser').get(verifyJWT,getUser);
+router.route('/getStudent').get(verifyJWT,getStudent);
+router.route('/getFaculty').get(verifyJWT,getFaculty);
 
 export default router;

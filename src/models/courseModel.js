@@ -6,7 +6,6 @@ const courseScheme = new Schema(
             type: String,
             required:[true,"Course Code Required"],
             unique:true,
-            lowercase:true,
             trim:true,
             index: true,
         },

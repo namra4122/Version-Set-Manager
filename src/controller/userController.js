@@ -48,12 +48,11 @@ const register = asyncHandler(async (req, res) => {
     }
 
     //role validation
-    if (role !== "student" && role !== "faculty") {
+    if (role !== "student" && role !== "faculty" && role !== "admin") {
         throw new apiError(400, "Invalid Role Type");
     }
 
     //checking whether user is already created or not
-    // console.log(existedUser);
     if (await User.findOne({ email })) {
         throw new apiError(409, "User with this email already exists");
     }
@@ -128,7 +127,6 @@ const login =  asyncHandler(async (req,res) => {
         httpOnly: true,
         secure: true
     }
-
     return res.status(200)
               .cookie("accessToken" , accessToken, option)
               .cookie("refreshToken" , refreshToken, option)
@@ -143,7 +141,7 @@ const login =  asyncHandler(async (req,res) => {
 })
 
 const logout = asyncHandler(async (req,res) => {
-    // console.log(req.user);
+
     await User.findByIdAndUpdate(
         req.user._id,
         {
@@ -235,11 +233,56 @@ const getUser = asyncHandler(async(req,res) => {
     )
 })
 
+const getStudent = asyncHandler(async(req,res) => {
+    const allStudent = await User.aggregate([
+        {
+            $match:{
+                role: "student"
+            }
+        },
+        {
+            "$project": {
+                fullName: 1
+            }
+        }
+    ])
+
+    // console.log(allStudent);
+    return res.status(200).json(
+        new apiResponse(
+            2020,allStudent,"Students fetched Successfully"
+        )
+    )
+})
+
+const getFaculty = asyncHandler(async(req,res) => {
+    const allFaculty = await User.aggregate([
+        {
+            "$match": {
+                role: "faculty"
+            }
+        },
+        {
+            "$project": {
+                fullName: 1
+            }
+        }
+    ])
+
+    return res.status(200).json(
+        new apiResponse(
+            2020,allFaculty,"Faculty fetched Successfully"
+        )
+    )
+})
+
 export { 
     register,
     login,
     logout,
     refreshToken,
     changeCurrentPassword,
-    getUser
+    getUser,
+    getStudent,
+    getFaculty
 };
