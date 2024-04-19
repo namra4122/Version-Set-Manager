@@ -6,6 +6,7 @@ import { apiResponse } from '../util/apiResponse.js';
 import jwt from 'jsonwebtoken';
 
 const generateAccessRefreshToken = async (userId) =>{
+
     try{
         const user = await User.findById(userId);
         const accessToken = user.generateAccessToken();
@@ -24,6 +25,7 @@ const generateAccessRefreshToken = async (userId) =>{
 }
 
 const register = asyncHandler(async (req, res) => {
+
     //get details
     //not empty,proper email format and proper role validation
     //account already?
@@ -34,10 +36,10 @@ const register = asyncHandler(async (req, res) => {
     //remove password and refresh token from respond
     //return res
 
-    const { email, fullName, role, password } = req.body;
+    const { userid, email, fullName, role, password } = req.body;
 
     //not empty validation
-    if ([email, fullName, role, password].some((fields) => fields?.trim() === "")) {
+    if ([userid, email, fullName, role, password].some((fields) => fields?.trim() === "")) {
         throw new apiError(400, "All fields are required");
     }
 
@@ -53,8 +55,8 @@ const register = asyncHandler(async (req, res) => {
     }
 
     //checking whether user is already created or not
-    if (await User.findOne({ email })) {
-        throw new apiError(409, "User with this email already exists");
+    if (await User.findOne({ userid })) {
+        throw new apiError(409, "User with this UserID already exists");
     }
 
     //avatar pic validation
@@ -70,6 +72,7 @@ const register = asyncHandler(async (req, res) => {
 
     //create User
     const user = await User.create({
+        userid,
         email,
         fullName,
         avatar: avatarImg.url,
@@ -98,17 +101,17 @@ const login =  asyncHandler(async (req,res) => {
     //access and refresh token
     //send cookie
 
-    const { email, password } = req.body;
+    const { userid, password } = req.body;
 
     // console.log(email);
 
     //check empty fields
-    if (!email) {
-        throw new apiError(400, "Email are required");
+    if (!userid) {
+        throw new apiError(400, "UserID are required");
     }
     
     //find user in DB
-    const user = await User.findOne({ email })
+    const user = await User.findOne({ userid })
     if(!user){
         throw new apiError(404, "User don't Exists. Please Register");
     }
@@ -166,6 +169,7 @@ const logout = asyncHandler(async (req,res) => {
 })
 
 const refreshToken = asyncHandler(async(req,res) =>{
+
     const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken;
 
     if(!incomingRefreshToken){
@@ -208,6 +212,7 @@ const refreshToken = asyncHandler(async(req,res) =>{
 })
 
 const changeCurrentPassword = asyncHandler(async(req, res) => {
+
     const {oldPassword, newPassword} = req.body
 
     const user = await User.findById(req.user?._id)
@@ -226,6 +231,7 @@ const changeCurrentPassword = asyncHandler(async(req, res) => {
 })
 
 const getUser = asyncHandler(async(req,res) => {
+
     return res.status(200).json(
         new apiResponse(
             200,req.user,"User fetched Successfully"
@@ -234,6 +240,7 @@ const getUser = asyncHandler(async(req,res) => {
 })
 
 const getStudent = asyncHandler(async(req,res) => {
+
     const allStudent = await User.aggregate([
         {
             $match:{
@@ -242,6 +249,7 @@ const getStudent = asyncHandler(async(req,res) => {
         },
         {
             "$project": {
+                userid: 1,
                 fullName: 1
             }
         }
@@ -250,12 +258,13 @@ const getStudent = asyncHandler(async(req,res) => {
     // console.log(allStudent);
     return res.status(200).json(
         new apiResponse(
-            2020,allStudent,"Students fetched Successfully"
+            200,allStudent,"Students fetched Successfully"
         )
     )
 })
 
 const getFaculty = asyncHandler(async(req,res) => {
+
     const allFaculty = await User.aggregate([
         {
             "$match": {
@@ -264,6 +273,7 @@ const getFaculty = asyncHandler(async(req,res) => {
         },
         {
             "$project": {
+                userid: 1,
                 fullName: 1
             }
         }
@@ -271,7 +281,7 @@ const getFaculty = asyncHandler(async(req,res) => {
 
     return res.status(200).json(
         new apiResponse(
-            2020,allFaculty,"Faculty fetched Successfully"
+            200,allFaculty,"Faculty fetched Successfully"
         )
     )
 })

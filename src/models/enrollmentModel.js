@@ -10,9 +10,6 @@ const enrollmentSchema = new Schema(
             type: Schema.Types.ObjectId,
             ref: "courseData"
         },
-        enrollmentDate:{
-            type: Date,
-        }
     },
     {
         timestamps: true

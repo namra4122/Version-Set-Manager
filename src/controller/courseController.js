@@ -1,4 +1,5 @@
 import { Course } from '../models/courseModel.js';
+import { User } from '../models/userModel.js';
 import { asyncHandler } from '../util/asyncHandler.js';
 import { apiError } from '../util/apiError.js';
 import { apiResponse } from '../util/apiResponse.js';
@@ -9,9 +10,9 @@ const addCourse = asyncHandler(async (req, res) => {
     //assign faculty to a course
     //check whether faculty is assigned exists or not?
 
-    const { courseCode, courseName, faculty_id } = req.body;
+    const { courseCode, courseName, facultyName } = req.body;
 
-    if(!courseCode || !courseName || !faculty_id){
+    if(!courseCode || !courseName || !facultyName){
         throw new apiError(400, "Please Provide Course Details");
     }
 
@@ -19,6 +20,7 @@ const addCourse = asyncHandler(async (req, res) => {
         throw new apiError(400, "Course Already Exists");
     }
 
+    const faculty_id = await User.findOne({fullName: facultyName})._id
 
     const course = await Course.create({
         courseCode,

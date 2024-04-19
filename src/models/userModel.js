@@ -4,6 +4,14 @@ import bcrypt from "bcrypt";
 
 const userSchema = new Schema(
   {
+    userid: {
+      type: String,
+      required:[true,"E-Mail Required"],
+      unique:true,
+      lowercase:true,
+      trim:true,
+      index: true,
+    },
     email:{
       type:String,
       required:[true,"E-Mail Required"],
@@ -55,8 +63,8 @@ userSchema.statics.isPasswordCorrect = async function(password,storedPassword){
 userSchema.methods.generateAccessToken = function(){
   return jwt.sign({
     _id: this._id,
+    userid: this.userid,
     email: this.email,
-    fullName: this.fullName,
     role: this.role
   },process.env.ACCESS_TOKEN_SECRET,
   {
