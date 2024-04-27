@@ -29,9 +29,12 @@ app.use(cookieParser());
 import userRoute from "./routes/userRoute.js";
 import courseRoute from "./routes/courseRoute.js"
 import enrollmentRoute from "./routes/enrollmentRoute.js"
+import groupRoute from "./routes/groupRoute.js"
+
 //Route declaration
 app.use('/api/user',userRoute);
 app.use('/api/course',courseRoute);
 app.use('/api/enroll',enrollmentRoute);
+app.use('/api/group',groupRoute);
 
 export { app }

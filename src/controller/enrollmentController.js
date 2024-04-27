@@ -1,6 +1,5 @@
 import { Enrollment } from '../models/enrollmentModel.js';
 import { Course } from '../models/courseModel.js';
-import { User } from '../models/userModel.js';
 import { asyncHandler } from '../util/asyncHandler.js';
 import { apiError } from '../util/apiError.js';
 import { apiResponse } from '../util/apiResponse.js';
