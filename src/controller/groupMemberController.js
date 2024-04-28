@@ -54,11 +54,56 @@ const addMember = asyncHandler(async(req,res)=>{
 });
 
 const removeMember = asyncHandler(async(req,res) => {
+    checkUser(req.user);
+
+    const { groupMember_id } = req.body;
     
+    if( !groupMember_id ){
+        throw new apiError(400,"Please enter Member_ID");
+    }
+
+    const member = await Group.findOne({ _id: groupMember_id });
+
+    if(!member){
+        throw new apiError(400,"Invalid Member details Details");
+    }
+
+    if(req.user._id.toString() !== member.groupOwner._id.toString()){
+        throw new apiError(403, "You are not authorized to remove this member.");
+    }
+
+    await GroupMember.deleteOne({ member });
+
+    const delMember = await GroupMember.aggregate([
+        {
+            $match:{_id: groupMember_id}
+        }
+    ])
+
+    if (!delMember) {
+        throw new apiError(500, "Something went wrong while Removing Member");
+    }
+
+    return res.status(201).json(
+        new apiResponse(200,"", "Member Removed Successfully")
+    ) 
 });
 
 const memberCount = asyncHandler(async(req,res) => {
-
+    try{
+        checkUser(req.user);
+        const { group_id } = req.body;
+    
+        if (!group_id) {
+          throw new apiError(400, "Please provide the group ID.");
+        }
+    
+        const memberCount = await GroupMember.countDocuments({ group_id: group_id });
+    
+        return res.status(200).json(new apiResponse(200, "", memberCount));
+    }catch(error){
+        throw new apiError(500,"Something went wrong while fetching member count",error);
+    }
 });
 
 export {
