@@ -100,7 +100,7 @@ const memberCount = asyncHandler(async(req,res) => {
     
         const memberCount = await GroupMember.countDocuments({ group_id: group_id });
     
-        return res.status(200).json(new apiResponse(200, "", memberCount));
+        return res.status(200).json(new apiResponse(200,memberCount,""));
     }catch(error){
         throw new apiError(500,"Something went wrong while fetching member count",error);
     }
