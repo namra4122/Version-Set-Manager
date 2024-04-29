@@ -26,11 +26,22 @@ const createGroup = asyncHandler(async (req,res) => {
         throw new apiError(400,"Please Enter all required Details")
     }
 
+    // console.log(await Group.findOne({ groupName: groupName }));
+    // console.log(await Group.findOne({ groupOwner: req.user._id }));
+
+    if(await Group.findOne({ groupName: groupName })){
+        throw new apiError(400, "Group with this Name already exists");
+    }
+
     const course_id = await Course.findOne({ courseCode: courseCode });
     const faculty_id = await User.findOne({ fullName: facultyName, role:"faculty" });
 
     if(!course_id||!faculty_id){
         throw new apiError(400,"Invalid Course or Faculty Details");
+    }
+
+    if(await Group.findOne({ groupOwner: req.user._id })){
+        throw new apiError(400, "You can't create another Group");
     }
     
     //creating group using monogoose session -> helps in transaction handling, what if creating the group succeeded but adding the group member did or vice verse.
@@ -39,22 +50,22 @@ const createGroup = asyncHandler(async (req,res) => {
         // Transactions let you execute multiple operations in isolation and potentially undo all the operations if one of them fails
         const session = await mongoose.startSession();
         session.startTransaction();
-
+        
         const group = await Group.create(
-            {
+            [{
                 groupName,
                 groupOwner: req.user._id,
-                course_id,
-                faculty_id
-            },
+                course_id: course_id._id,
+                faculty_id: faculty_id._id
+            }],
             { session }
         );
 
         await GroupMember.create(
-            {
-                group_id: group._id,
-                user_id: req.user._id,
-            },
+            [{
+                group_id: group[0]._id,
+                student_id: req.user._id,
+            }],
             { session },
         )
 
@@ -66,7 +77,10 @@ const createGroup = asyncHandler(async (req,res) => {
         );
     } catch (error) {
         console.error(error);
-        await session.abortTransaction(); // Rollback if necessary
+        if (session) {
+            await session.abortTransaction();
+            session.endSession();
+        }
         throw new apiError(500, "Error creating group",error);
     }
     
@@ -80,7 +94,7 @@ const deleteGroup = asyncHandler(async(req,res) => {
     try {
         checkUser(req.user);
         const { group_id } = req.body;
-        
+
         if (!group_id) {
             throw new apiError(400, "Please provide the group ID.");
         }
@@ -88,41 +102,38 @@ const deleteGroup = asyncHandler(async(req,res) => {
         if (!group) {
             throw new apiError(400, "Invalid group ID.");
         }
+        
         if (group.groupOwner._id.toString() !== req.user._id.toString()) {
             throw new apiError(403, "You are not authorized to delete this group.");
         }
         
-        const memberCount = await GroupMember.countDocuments({ group: group_id });
-        if (memberCount > 0) {
+        const memberCount = await GroupMember.countDocuments({ group_id: group_id });
+        if (memberCount > 1) {
             throw new apiError(400, "Cannot delete group with members. Please remove members first.");
         }
         
         await Group.deleteOne({ _id: group_id });
+        await GroupMember.deleteOne( { group_id: group_id});
+        
         return res.status(200).json(
             new apiResponse(200, "", "Group deleted successfully")
         );
     }catch (error) {
-        throw new apiError(500,"Something went wrong while deleting the group",error);
+        throw new apiError(500,error);
     }
 }); 
 
 const getAllGroup = asyncHandler(async(req,res) => {
     try {
-        checkUser(req.user); // Assuming this function ensures user authentication
+        checkUser(req.user);
     
-        // 1. Optional Filtering (Consider adding query params if needed)
         const filters = {}; // Create an empty filter object
-        const { groupOwner, groupName } = req.query; // Example query params
-    
-        if (groupOwner) {
-          filters.groupOwner = groupOwner; // Filter by group owner ID
-        }
-    
+        const { groupName } = req.query; // Example query params
+        
         if (groupName) {
-          filters.groupName = { $regex: new RegExp(groupName, 'i') }; // Case-insensitive search for group name
+            filters.groupName = { $regex: new RegExp(groupName, 'i') }; // Case-insensitive search for group name
         }
     
-        // 2. Retrieve Groups
         const groups = await Group.find(filters).populate('groupOwner'); // Fetch groups and populate owner details
     
         return res.status(200).json(new apiResponse(200,groups,""));
@@ -133,30 +144,40 @@ const getAllGroup = asyncHandler(async(req,res) => {
 
 const getGroup = asyncHandler(async(req,res) => {
     try {
+        console.log("INSIDE TRY BLOCK");
+        console.log("----------------");
         checkUser(req.user);
-    
-        const { groupName } = req.query.groupName; // Get group name from request params (or query depending on your API design)
-    
+        
+        const { groupName,includeMembers} = req.query; // Get group name from request params (or query depending on your API design)
+        console.log(groupName)
+        console.log("----------------");
+        
         if (!groupName) {
-          throw new apiError(400, "Please provide the group name.");
+            throw new apiError(400, "Please provide the group name.");
         }
-    
+        
         // fetch Group Details with Owner Information
         const group = await Group.findOne({ groupName: groupName }).populate('groupOwner');
-    
+        console.log(group)
+        console.log("----------------");
+        
         if (!group) {
-          throw new apiError(400, "Invalid group name. Group does not exist.");
+            throw new apiError(400, "Invalid group name. Group does not exist.");
         }
-    
+        
         // retrieve Member Count
-        const memberCount = await GroupMember.countDocuments({ group: group._id });
-    
+        const memberCount = await GroupMember.countDocuments({ group_id: group._id });
+        console.log(memberCount)
+        console.log("----------------");
+        
         // fetch Member Details (Consider Pagination if many members)
         let memberDetails = null;
-        if (req.query.includeMembers === 'true') { // Optional query param for member details
-          memberDetails = await GroupMember.find({ group: group._id }).populate('student'); // Fetch member details with student information
+        if (includeMembers === 'true') { // Optional query param for member details
+            memberDetails = await GroupMember.find({ group_id: group._id }).populate('student_id'); // Fetch member details with student information
+            console.log(memberDetails)
+            console.log("----------------");
         }
-    
+        
         return res.status(200).json(
           new apiResponse(200, "", {
             ...group._doc, // Spread group properties

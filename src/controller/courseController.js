@@ -20,12 +20,13 @@ const addCourse = asyncHandler(async (req, res) => {
         throw new apiError(400, "Course Already Exists");
     }
 
-    const faculty_id = await User.findOne({fullName: facultyName})._id
+    const faculty_id = await User.findOne({fullName: facultyName})
+    // console.log(faculty_id._id);
 
     const course = await Course.create({
         courseCode,
         courseName,
-        faculty_id
+        faculty_id: faculty_id._id
     });
 
     // check whether the data created

@@ -5,13 +5,11 @@ const router = express.Router();
 
 import {
     addMember,
-    removeMember,
-    memberCount
+    removeMember
 } from "../controller/groupMemberController.js"
 
 router.use(verifyJWT);
 router.route('/addmember').post(addMember);
-router.route('/addmember').post(removeMember);
-router.route('/memberCount').get(memberCount);
+router.route('/removerMember').post(removeMember);
 
 export default router;
