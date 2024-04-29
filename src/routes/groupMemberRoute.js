@@ -13,3 +13,5 @@ router.use(verifyJWT);
 router.route('/addmember').post(addMember);
 router.route('/addmember').post(removeMember);
 router.route('/memberCount').get(memberCount);
+
+export default router;
