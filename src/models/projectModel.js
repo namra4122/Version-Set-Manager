@@ -6,9 +6,18 @@ const projectSchema = new Schema(
             type: String,
             required: [true, "Project Title is Required"],
             lowercase: true,
-            index: true,
+            index: true
         },
         aboutProject: {
+            type: String,
+        },
+        codebaseUrl:{
+            type: String,
+        },
+        docUrl:{
+            type: String,
+        },
+        pptUrl:{
             type: String,
         },
         course_id:{

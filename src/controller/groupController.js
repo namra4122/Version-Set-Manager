@@ -26,9 +26,6 @@ const createGroup = asyncHandler(async (req,res) => {
         throw new apiError(400,"Please Enter all required Details")
     }
 
-    // console.log(await Group.findOne({ groupName: groupName }));
-    // console.log(await Group.findOne({ groupOwner: req.user._id }));
-
     if(await Group.findOne({ groupName: groupName })){
         throw new apiError(400, "Group with this Name already exists");
     }
