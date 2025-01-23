@@ -114,33 +114,3 @@ export {
     getCourse,
     getAllCourse
 }
-
-// db.enrollments.aggregate([
-//     {
-//       $lookup: {
-//         from: "user",
-//         localField: "student_id",
-//         foreignField: "_id",
-//         as: "student"
-//       }
-//     },
-//     {
-//       $unwind: "$student"
-//     },
-//     {
-//       $match: {
-//         "student.role": "student"
-//       }
-//     },
-//     {
-//       $group: {
-//         _id: "$student_id",
-//         studentFullName: {
-//           $first: "$student.fullName"
-//         },
-//         totalCourses: {
-//           $sum: 1
-//         }
-//       }
-//     }
-//   ])

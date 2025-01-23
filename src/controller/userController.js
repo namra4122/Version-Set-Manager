@@ -103,8 +103,6 @@ const login =  asyncHandler(async (req,res) => {
 
     const { userid, password } = req.body;
 
-    // console.log(email);
-
     //check empty fields
     if (!userid) {
         throw new apiError(400, "UserID are required");
@@ -117,9 +115,7 @@ const login =  asyncHandler(async (req,res) => {
     }
     
     //check user credential
-    // console.log(userSchema);
     const isPasswordValid = await User.isPasswordCorrect(password,user.password);
-    // console.log(isPasswordValid);
     if(!isPasswordValid){
         throw new apiError(401, "Invalid Credentials");
     }
