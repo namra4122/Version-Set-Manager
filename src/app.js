@@ -33,6 +33,10 @@ import groupRoute from "./routes/groupRoute.js"
 import groupMemberRoute from "./routes/groupMemberRoute.js"
 
 //Route declaration
+app.get('/',(req,res)=>{
+    res.send("<h1>WELCOME TO VESION SET MANAGER</h1>")
+});
+
 app.use('/api/user',userRoute);
 app.use('/api/course',courseRoute);
 app.use('/api/enroll',enrollmentRoute);
