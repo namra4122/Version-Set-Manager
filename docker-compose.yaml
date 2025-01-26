@@ -1,4 +1,3 @@
-version: '3'
 services:
   mongo:
     image: mongodb/mongodb-community-server:latest
@@ -9,3 +8,5 @@ services:
     ports:
       - "80:80"
     env_file: ".env"
+    depends_on:
+      - mongo
